@@ -1,88 +1,21 @@
 <template>
     <div class="cinema_body">
-        <ul>
-            <li>
+        <ul>          
+            <li v-for="cinema in cinemas" :key="cinema.id">
                 <div>
-                    <span>大地影院(澳东世纪店)</span>
-                    <span class="q"><span class="price">22.9</span> 元起</span>
+                    <span>{{ cinema.nm }}</span>
+                    <span class="q" v-if="cinema.sellPrice"><span class="price">{{ cinema.sellPrice }}</span> 元起</span>
                 </div>
                 <div class="address">
-                    <span>金州区大连经济技术开发区澳东世纪3层</span>
-                    <span>1763.5km</span>
+                    <span>{{ cinema.addr }}</span>
+                    <span>{{cinema.distance}}</span>
                 </div>
                 <div class="card">
-                    <div>小吃</div>
-                    <div>折扣卡</div>
-                </div>
-            </li>
-            <li>
-                <div>
-                    <span>大地影院(澳东世纪店)</span>
-                    <span class="q"><span class="price">22.9</span> 元起</span>
-                </div>
-                <div class="address">
-                    <span>金州区大连经济技术开发区澳东世纪3层</span>
-                    <span>1763.5km</span>
-                </div>
-                <div class="card">
-                    <div>小吃</div>
-                    <div>折扣卡</div>
-                </div>
-            </li>
-            <li>
-                <div>
-                    <span>大地影院(澳东世纪店)</span>
-                    <span class="q"><span class="price">22.9</span> 元起</span>
-                </div>
-                <div class="address">
-                    <span>金州区大连经济技术开发区澳东世纪3层</span>
-                    <span>1763.5km</span>
-                </div>
-                <div class="card">
-                    <div>小吃</div>
-                    <div>折扣卡</div>
-                </div>
-            </li>
-            <li>
-                <div>
-                    <span>大地影院(澳东世纪店)</span>
-                    <span class="q"><span class="price">22.9</span> 元起</span>
-                </div>
-                <div class="address">
-                    <span>金州区大连经济技术开发区澳东世纪3层</span>
-                    <span>1763.5km</span>
-                </div>
-                <div class="card">
-                    <div>小吃</div>
-                    <div>折扣卡</div>
-                </div>
-            </li>
-            <li>
-                <div>
-                    <span>大地影院(澳东世纪店)</span>
-                    <span class="q"><span class="price">22.9</span> 元起</span>
-                </div>
-                <div class="address">
-                    <span>金州区大连经济技术开发区澳东世纪3层</span>
-                    <span>1763.5km</span>
-                </div>
-                <div class="card">
-                    <div>小吃</div>
-                    <div>折扣卡</div>
-                </div>
-            </li>
-            <li>
-                <div>
-                    <span>大地影院(澳东世纪店)</span>
-                    <span class="q"><span class="price">22.9</span> 元起</span>
-                </div>
-                <div class="address">
-                    <span>金州区大连经济技术开发区澳东世纪3层</span>
-                    <span>1763.5km</span>
-                </div>
-                <div class="card">
-                    <div>小吃</div>
-                    <div>折扣卡</div>
+                    <div v-if="cinema.tag.allowRefund === 1" class="bl">退</div>
+                    <div v-if="cinema.tag.endorse === 1" class="bl">改签</div>
+                    <div v-if="cinema.tag.snack === 1" class="or">小吃</div>
+                    <div v-if="cinema.tag.vipTag" class="or">{{ cinema.tag.vipTag }}</div>
+                    <div v-for="type in cinema.tag.hallType" :key="type"  class="bl"> {{ type }} </div>
                 </div>
             </li>
         </ul>
@@ -91,7 +24,23 @@
 
 <script>
 export default {
-    name: 'CinemaList'
+    name: 'CinemaList',
+    data(){
+        return {
+            cinemas: []
+        }
+    },
+    mounted(){
+        this.axios({
+            //url:'/ajax/cinemaList?ci=57',
+            //url: 'ajax/cinemaDetail?cinemaId=890',
+            //url:'/ajax/movieOnInfoList?ci=57',
+            url: '/ajax/cinemaList?ci=30'
+        }).then(res => {
+            this.cinemas = res.data.cinemas;        
+            console.log(this.cinemas);
+        })
+    }
 }
 </script>
 
