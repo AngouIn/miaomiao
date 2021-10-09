@@ -1,6 +1,6 @@
 <template>
   <div>
-    <myHeader title="我的璐璐"/>
+    <myHeader title="登录"/>
     <div id="content">
       <login />
     </div>
