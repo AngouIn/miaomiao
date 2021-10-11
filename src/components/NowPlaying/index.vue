@@ -1,19 +1,25 @@
 <template>
-    <div class="movie_body">
-        <ul>         
-            <li v-for="film in films" :key="film.id">
-                <div class="pic_show"><img :src="film.img | setWH('128.180')"></div>
-                <div class="info_list">
-                    <h2>{{film.nm}} <img v-if="film.version.indexOf('v3d') > -1" src="@/assets/maxs.png"/></h2>
-                    <p>观众评 <span class="grade">{{film.sc}}</span></p>
-                    <p>主演: {{ film.star }}</p>
-                    <p>{{ film.showInfo }} </p>
-                </div>
-                <div class="btn_mall">
-                    购票
-                </div>
-            </li>
-        </ul>
+    <div class="movie_body" ref="movie_body">
+        <Loading v-if="isLoading"/>
+        <Scroller v-else ref="scroll" :handleToScroll="handleToScroll" :handleToTouchEnd="handleToTouchEnd">
+            <ul> 
+                <transition>
+                    <Loading v-if="isRefresh" style="transition: all 0.6s"/>
+                </transition>
+                <li v-for="film in films" :key="film.id">
+                    <div class="pic_show" @click = "handleToDetail"><img :src="film.img | setWH('128.180')"></div>
+                    <div class="info_list">
+                        <h2>{{film.nm}} <img v-if="film.version.indexOf('v3d') > -1" src="@/assets/maxs.png"/></h2>
+                        <p>观众评 <span class="grade">{{film.sc}}</span></p>
+                        <p>主演: {{ film.star }}</p>
+                        <p>{{ film.showInfo }} </p>
+                    </div>
+                    <div class="btn_mall">
+                        购票
+                    </div>
+                </li>
+            </ul>
+        </Scroller>
     </div>
 </template>
 
@@ -22,15 +28,49 @@ export default {
     name: 'NowPlaying',
     data(){
         return{
-            films:[]
+            films:[],
+            isLoading: true,
+            isRefresh: false,
+            prevCityId: -1
         }
     },
-    mounted(){
+    activated(){
+        var cityId = this.$store.state.city.cityId
+        if(this.prevCityId === cityId) return
+
+        // 说明切换城市了
+        this.isLoading = true
+
         this.axios({
-            url: '/ajax/movieOnInfoList?token=',
+            url: `/ajax/movieOnInfoList?ci=${cityId}&token=`
         }).then(res=>{
             this.films = res.data.movieList
+             this.prevCityId = cityId
+            this.isLoading = false
+            this.$nextTick(() => {
+                this.$refs.scroll.handleScrollRefresh()
+            })
         })
+    },
+    methods: {
+        handleToDetail(){
+            console.log("1111");
+        },
+        handleToScroll(pos){
+            if(pos.y > 30){
+                this.isRefresh = true
+            }
+        },
+        handleToTouchEnd(pos){
+            if(pos.y > 30){
+                this.axios({
+                    url: `/ajax/movieOnInfoList?ci=${this.$store.state.city.cityId}&token=`
+                }).then(res => {
+                    this.films = res.data.movieList
+                    this.isRefresh = false
+                })
+            }
+        }       
     }
 }
 </script>
