@@ -13,19 +13,19 @@
           <router-link tag="div" to="/movie/search" class="search_entry">
             <i class="iconfont icon-sousuo"></i>
           </router-link>
-        </div>
+      </div>
         <keep-alive>
           <router-view />
         </keep-alive>       
     </div>
     <tabBar />
+    <router-view name="detail"/>
   </div>
 </template>
 
 <script>
 import myHeader from '@/components/Header'
 import tabBar from '@/components/TabBar'
-import { messageBox } from '@/components/JS'
 export default {
   name: 'Movie',
   components: {

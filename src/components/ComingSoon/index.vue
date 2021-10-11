@@ -6,7 +6,7 @@
             <transition>
                 <Loading v-if="isRefresh" style="transition: all 0.6s"/>
             </transition>
-            <li v-for="film in films" :key="film.id">
+            <li v-for="film in films" :key="film.id" @click="handleToDetail(film.id)">
                 <div class="pic_show"><img :src="film.img | setWH('128.180')"></div>
                 <div class="info_list">
                     <h2>{{ film.nm }}</h2>
@@ -65,7 +65,10 @@ export default {
                     this.isRefresh = false
                 })
             }
-        } 
+        },
+        handleToDetail(filmId){
+            this.$router.push('/movie/detail/comingSoon/' + filmId)
+        }
     }
 }
 </script>

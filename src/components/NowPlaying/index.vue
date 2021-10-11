@@ -6,8 +6,8 @@
                 <transition>
                     <Loading v-if="isRefresh" style="transition: all 0.6s"/>
                 </transition>
-                <li v-for="film in films" :key="film.id">
-                    <div class="pic_show" @click = "handleToDetail"><img :src="film.img | setWH('128.180')"></div>
+                <li v-for="film in films" :key="film.id" @click="handleToDetail(film.id)">
+                    <div class="pic_show"><img :src="film.img | setWH('128.180')"></div>
                     <div class="info_list">
                         <h2>{{film.nm}} <img v-if="film.version.indexOf('v3d') > -1" src="@/assets/maxs.png"/></h2>
                         <p>观众评 <span class="grade">{{film.sc}}</span></p>
@@ -40,12 +40,11 @@ export default {
 
         // 说明切换城市了
         this.isLoading = true
-
         this.axios({
             url: `/ajax/movieOnInfoList?ci=${cityId}&token=`
         }).then(res=>{
             this.films = res.data.movieList
-             this.prevCityId = cityId
+            this.prevCityId = cityId
             this.isLoading = false
             this.$nextTick(() => {
                 this.$refs.scroll.handleScrollRefresh()
@@ -53,8 +52,8 @@ export default {
         })
     },
     methods: {
-        handleToDetail(){
-            console.log("1111");
+        handleToDetail(filmId){
+            this.$router.push('/movie/detail/nowPlaying/' + filmId)
         },
         handleToScroll(pos){
             if(pos.y > 30){
