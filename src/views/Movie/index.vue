@@ -3,12 +3,12 @@
     <myHeader title="电影"/>
     <div id="content">
       <div class="movie_menu">
-          <router-link tag="div" to="/movie/city" class="city_name">
-            <span>大连</span><i class="iconfont icon-lower-triangle"></i>
+          <router-link tag="div" :to="{path: '/movie/city', query: {comeFrom: currentFullPath }}" class="city_name">
+            <span>{{ $store.state.city.name }}</span><i class="iconfont icon-lower-triangle"></i>
           </router-link>
           <div class="hot_swtich">
-            <router-link tag="div" to="/movie/nowPlaying" class="hot_item">正在热映</router-link>
-            <router-link tag="div" to="/movie/comingSoon" class="hot_item">即将上映</router-link>
+            <router-link tag="div" to="/movie/nowPlaying" class="hot_item" >正在热映</router-link>
+            <router-link tag="div" to="/movie/comingSoon" class="hot_item" >即将上映</router-link>
           </div>
           <router-link tag="div" to="/movie/search" class="search_entry">
             <i class="iconfont icon-sousuo"></i>
@@ -25,11 +25,20 @@
 <script>
 import myHeader from '@/components/Header'
 import tabBar from '@/components/TabBar'
+import { messageBox } from '@/components/JS'
 export default {
   name: 'Movie',
   components: {
     myHeader,
-    tabBar
+    tabBar,
+  },
+  data(){
+    return {
+      currentFullPath: '/movie/nowPlaying'
+    }
+  },
+  updated(){
+    this.currentFullPath = this.$route.fullPath
   }
 }
 </script>

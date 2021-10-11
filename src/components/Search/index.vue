@@ -44,7 +44,7 @@ export default {
             var that = this
             this.cancelRequest()
             this.axios({
-                url:`/ajax/search?kw=${newVal}&cityId=30&stype=-1`,
+                url:`/ajax/search?kw=${newVal}&cityId=${this.$store.state.city.cityId}&stype=-1`,
                 cancelToken: new this.axios.CancelToken(function(c){
                     that.source = c
                 })

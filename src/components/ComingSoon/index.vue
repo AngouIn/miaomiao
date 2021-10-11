@@ -1,19 +1,25 @@
 <template>
-  <div class="movie_body">
-    <ul>
-        <li v-for="film in films" :key="film.id">
-            <div class="pic_show"><img :src="film.img | setWH('128.180')"></div>
-            <div class="info_list">
-                <h2>{{ film.nm }}</h2>
-                <p><span class="person">{{ film.wish }}</span> 人想看</p>              
-                <p>主演: {{ film.star }}</p>
-                <p>上映日期：{{ film.rt }} 上映</p>
-            </div>
-            <div class="btn_pre">
-                预售
-            </div>
-        </li>
-    </ul>
+  <div class="movie_body" ref="movie_body">
+    <Loading v-if="isLoading"/>
+    <Scroller v-else ref="scroll" :handleToScroll="handleToScroll" :handleToTouchEnd="handleToTouchEnd">
+        <ul>
+            <transition>
+                <Loading v-if="isRefresh" style="transition: all 0.6s"/>
+            </transition>
+            <li v-for="film in films" :key="film.id">
+                <div class="pic_show"><img :src="film.img | setWH('128.180')"></div>
+                <div class="info_list">
+                    <h2>{{ film.nm }}</h2>
+                    <p><span class="person">{{ film.wish }}</span> 人想看</p>              
+                    <p>主演: {{ film.star }}</p>
+                    <p>上映日期：{{ film.rt }} 上映</p>
+                </div>
+                <div class="btn_pre">
+                    预售
+                </div>
+            </li>
+        </ul>
+    </Scroller>
 </div>
 </template>
 
@@ -22,16 +28,44 @@ export default {
     name: 'ComingSoon',
     data(){
         return{
-            films: []
+            films: [],
+            isLoading: true,
+            isRefresh: false,
+            prevCityId: -1
         }
     },
-    mounted(){
+    activated(){
+        var cityId = this.$store.state.city.cityId
+        if(this.prevCityId === cityId) return
+
+        this.isLoading = true
         this.axios({
-            url: '/ajax/comingList?ci=10&token=&limit=10'
+            url: `/ajax/comingList?ci=${cityId}&token=&limit=10`
         }).then(res=>{
             this.films = res.data.coming
+             this.prevCityId = cityId
+            this.isLoading = false
+            this.$nextTick(() => {
+                this.$refs.scroll.handleScrollRefresh()               
+            })
         })
-
+    },
+    methods: {
+        handleToScroll(pos){
+            if(pos.y > 30){
+                this.isRefresh = true
+            }
+        },
+        handleToTouchEnd(pos){
+            if(pos.y > 30){
+                this.axios({
+                    url: `/ajax/comingList?ci=${this.$store.state.city.cityId}&token=&limit=10`
+                }).then(res => {
+                    this.films = res.data.coming
+                    this.isRefresh = false
+                })
+            }
+        } 
     }
 }
 </script>
